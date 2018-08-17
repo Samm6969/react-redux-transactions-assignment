@@ -1,4 +1,6 @@
 import React,{Component} from 'react';
+import { connect } from 'react-redux';
+
 class FilterRow extends React.Component {
   constructor(props) {
     super(props);

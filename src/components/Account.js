@@ -1,27 +1,16 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import store from "../store";
 import "./Account.css";
-import {
-  updateAccountNameFilter,
-  updateTransactionTypeFilter
-} from "../action-creator";
-import {filterTransaction} from '../actions/transactionAction';
+import { filterTransaction } from "../actions/transactionAction";
+import { connect } from "react-redux";
 
-export default class Account extends React.Component {
+class Account extends React.Component {
   constructor(props) {
     super(props);
-    this.accounts = store.getState().accountName;
+    this.accounts = this.props.accountName;
     this.state = {
       isDisplay: true
     };
-  }
-  updateAccountNameFilter(account) {
-    account.isChecked=!account.isChecked;
-       filterTransaction(account)
-  }
-  getClassName() {
-    return this.isDisplay ? "up" : "down";
   }
 
   toggleFilterDisplay() {
@@ -34,7 +23,7 @@ export default class Account extends React.Component {
         <div className="header" onClick={this.toggleFilterDisplay.bind(this)}>
           <div className="name">Account Name</div>
           <svg
-            className={this.state.isDisplay ? "down" : "up" }
+            className={this.state.isDisplay ? "down" : "up"}
             width="16"
             height="27"
             viewBox="0 0 16 27"
@@ -50,7 +39,7 @@ export default class Account extends React.Component {
           className="list"
           style={{ display: this.state.isDisplay ? "block" : "none" }}
         >
-          {this.accounts.map((account, idx) => (
+          {this.props.accounts.map((account, idx) => (
             <div key={idx}>
               <label className="input_container">
                 {account.name}
@@ -58,7 +47,12 @@ export default class Account extends React.Component {
                   type="checkbox"
                   className="checkbox"
                   data-filter={account.name}
-                  onChange={()=>this.updateAccountNameFilter(account)}/>
+                  defaultChecked={account.isChecked}
+                  onChange={() => {
+                    account.isChecked = !account.isChecked;
+                    this.props.filterTransaction(account);
+                  }}
+                />
                 <span className="checkmark" />
               </label>
             </div>
@@ -68,3 +62,19 @@ export default class Account extends React.Component {
     );
   }
 }
+
+Account.propTypes = {
+  accounts: PropTypes.array.isRequired,
+  filterTransaction: PropTypes.func.isRequired
+};
+
+const mapStateToProps = state => ({
+  accounts: state.accountName
+});
+
+export default connect(
+  mapStateToProps,
+  {
+    filterTransaction
+  }
+)(Account);

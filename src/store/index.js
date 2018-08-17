@@ -1,10 +1,13 @@
-import { createStore } from "redux";
+import { createStore,applyMiddleware, compose } from 'redux';
+import thunk from 'redux-thunk';
 import reducer from "../reducer";
 
 const initialState = {
+  allTransactions:[],
+  currentTransaction:[],
   filter: {
     account: [],
-    transaction: []
+    transactionType: []
   },
   pagination: {
     currentPage: 1,
@@ -13,4 +16,12 @@ const initialState = {
     totalRecords: null
   }
 };
-export default createStore(reducer, initialState); //this has been updated to include the created reducer.
+
+const middleware = [thunk];
+const store = createStore(reducer,
+    initialState,
+    compose(
+    applyMiddleware(...middleware),
+    )
+);
+export default store;

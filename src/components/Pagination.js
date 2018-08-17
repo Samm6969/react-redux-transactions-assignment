@@ -1,7 +1,8 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import { gotoPage } from "../actions/transactionAction";
-import store from "../store";
+import { connect } from 'react-redux';
+
 
 const LEFT_PAGE = "LEFT";
 const RIGHT_PAGE = "RIGHT";
@@ -25,14 +26,14 @@ class Pagination extends Component {
       totalRecords = null,
       pageLimit = 30,
       pageNeighbours = 0
-    } = store.getState().pagination;
+    } = this.props.pagination;
 
     this.pageLimit = typeof pageLimit === "number" ? pageLimit : 30;
     this.totalRecords = typeof totalRecords === "number" ? totalRecords : 0;
 
     this.pageNeighbours =
       typeof pageNeighbours === "number"
-        ? Math.max(0, Math.min(pageNeighbours, 2))
+        ? Math.max(0, Math.min(pageNeighbours, 1))
         : 0;
 
     this.totalPages = Math.ceil(this.totalRecords / this.pageLimit);
@@ -75,8 +76,8 @@ class Pagination extends Component {
   };
 
   fetchPageNumbers = () => {
-    const totalPages = store.getState().pagination.totalPages;
-    const currentPage = store.getState().pagination.currentPage;
+    const totalPages = this.props.pagination.totalPages;
+    const currentPage = this.props.pagination.currentPage;
     const pageNeighbours = this.pageNeighbours;
 
     const totalNumbers = this.pageNeighbours * 2 + 3;
@@ -126,12 +127,6 @@ class Pagination extends Component {
 
     const { currentPage } = this.state;
     let pages = this.fetchPageNumbers();
-    store.subscribe(() => {
-      pages = this.fetchPageNumbers();
-      console.log(pages);
-    });
-    console.log(pages);
-
     return (
       <Fragment>
         <nav aria-label="Countries Pagination">
@@ -190,4 +185,13 @@ class Pagination extends Component {
     );
   }
 }
-export default Pagination;
+
+const mapStateToProps = state => ({
+  pagination: state.pagination
+});
+
+export default connect(
+  mapStateToProps,
+  {  }
+)(Pagination);
+
